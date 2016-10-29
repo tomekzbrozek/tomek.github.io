@@ -38,7 +38,7 @@
     	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
-	d3.csv("https://github.com/tomekzbrozek/tomek.github.io/raw/master/tsla.csv", function(error, data) { if (error) throw error;
+	d3.csv("/tsla.csv", function(error, data) { if (error) throw error;
  
 // format the data
 	data.forEach(function(d) { d.Date = parseTime(d.Date); d.Close = +d.Close;
