@@ -21,7 +21,7 @@
 		height = 500 - margin.top - margin.bottom;
 
 // parse the date / time
-	var parseTime = d3.timeParse("%d-%b-%y");
+	var parseTime = d3.timeParse("%Y-%m-%d");
 
 // set the ranges. Here's an amazing trick, helping to scale & revert vertical axis at once. Instead of calculating the difference between height and d.Data, height just needs to be declared as the down constraint of the y range.
 	var x = d3.scaleTime().range([0, width]); 
