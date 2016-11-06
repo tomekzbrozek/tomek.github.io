@@ -1,37 +1,69 @@
-
 <!DOCTYPE html>
 <meta charset="utf-8"> <style> /* set the CSS */
+	
+
+	.x.axis path,
+	.axis line {
+	  display: none;
+	}
 
 	.line {
 		fill: none; stroke: #2f6e57; stroke-width: 2px;
-	} </style>
+	} 
 
-<head>
-	<title>Tomek's D3.js playground</title>
-</head>
+	div.tooltip {	
+	    position: absolute;			
+	    text-align: center;			
+	    width: 120px;					
+	    height: 60;					
+	    padding: 2px;				
+	    font: 12px calibri;	
+	    color: white;	
+	    background: #4c4f53;	
+	    border: 1px;		
+	    border-radius: 4px;			
+	    pointer-events: none;			
+	}
+
+	</style>
 
 <body>
 
 <!-- load the d3.js library -->
-	<script src="https://d3js.org/d3.v4.min.js"></script> <script>
+	<script src="https://d3js.org/d3.v4.min.js"></script> 
+	<script>
 
 // set the dimensions and margins of the graph
 	var margin = {top: 50, right: 50, bottom: 50, left: 50}, 
 		width = 1200 - margin.left - margin.right,
 		height = 500 - margin.top - margin.bottom;
 
-// parse the date / time
+// parse & format date / time
 	var parseTime = d3.timeParse("%Y-%m-%d");
+	var formatTime = d3.timeFormat("%B %d, %Y");
+
 
 // set the ranges. Here's an amazing trick, helping to scale & revert vertical axis at once. Instead of calculating the difference between height and d.Data, height just needs to be declared as the down constraint of the y range.
 	var x = d3.scaleTime().range([0, width]); 
 	var y = d3.scaleLinear().range([height, 0]);
+
+    // Define the axes
+var xAxis = d3.axisBottom()
+    .scale(x);
+
+var yAxis = d3.axisLeft()
+    .scale(y);
 
 // define the line
 	var valueline = d3.line()
 		.curve(d3.curveMonotoneX)
 		.x(function(d) { return x(d[0]); }) 
 		.y(function(d) { return y(d[4]); });
+
+// Define the div for the tooltip
+var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
 
 // append the svg obgect to the body of the page // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin 
@@ -54,12 +86,35 @@
 	x.domain(d3.extent(quandlData, function(d) { return d[0]; })); 
 	y.domain([0, d3.max(quandlData, function(d) { return d[4]; })]);
 
+
 // Add the valueline path.
   	svg.append("path")
       .data([quandlData])
       .attr("class", "line")
       .attr("d", valueline);
-  
+
+	svg.selectAll("circle")	
+       	.data(quandlData)			
+    	.enter().append("circle")								
+       	.attr("r", 4)		
+        .attr("cx", function(d) { return x(d[0]); })		 
+        .attr("cy", function(d) { return y(d[4]); })
+       	.attr("fill", "#2f6e57")
+       	.attr('fill-opacity', 0)	
+        .on("mouseover", function(d) {		
+            div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            div	.html(formatTime(d[0]) + "<br/>"  + d[4] + " $")	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");	
+            })					
+        .on("mouseout", function(d) {		
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+        });
+
  // Add the X Axis
   	svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -68,8 +123,10 @@
  // Add the Y Axis
  	 svg.append("g")
      .call(d3.axisLeft(y));
+
  
  } );
 
 	</script>
 </body>
+
