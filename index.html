@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <meta charset="utf-8"> <style> /* set the CSS */
 	
@@ -25,16 +26,39 @@
 	    pointer-events: none;			
 	}
 
+	.axisFormat line{
+  		stroke: #4c4f53;
+  		font: 10px calibri;
+	}
+
+	.axisFormat path{
+  		stroke: #4c4f53;
+  		font: 10px calibri;
+	}
+
+	.axisFormat text{
+		font: 10px calibri;
+  		fill: #4c4f53;
+	}  
+
 	</style>
 
 <body>
+
+<p>
+  <label for="nLastDays" 
+         style="display: inline-block; width: 600px; text-align: center">
+         Select N last days range = <span id="nLastDays-value">...</span>
+  </label>
+  <input type="range" min="1" max="365" id="nLastDays">
+</p>
 
 <!-- load the d3.js library -->
 	<script src="https://d3js.org/d3.v4.min.js"></script> 
 	<script>
 
 // set the dimensions and margins of the graph
-	var margin = {top: 50, right: 50, bottom: 50, left: 50}, 
+	var margin = {top: 100, right: 50, bottom: 50, left: 50}, 
 		width = 1200 - margin.left - margin.right,
 		height = 500 - margin.top - margin.bottom;
 
@@ -78,13 +102,31 @@ var div = d3.select("body").append("div")
    d3.json("https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm", function(data) {
       var quandlData = data.dataset.data;
 
+
 // format the data
 	quandlData.forEach(function(d) { d[0] = parseTime(d[0]); d[4] = +d[4];
 	});
+
+
+// set a start date to filter with (last 365 days, then filter data)
+
+	var cutoffDate = new Date();
+
+	var nLastDaysInitial = 365;
+
+	cutoffDate.setDate(cutoffDate.getDate() - nLastDaysInitial);
+
+	quandlData = quandlData.filter(function(d) {
+  		return d[0] > cutoffDate;
+	})
  
 // Scale the range of the data
 	x.domain(d3.extent(quandlData, function(d) { return d[0]; })); 
-	y.domain([0, d3.max(quandlData, function(d) { return d[4]; })]);
+	//y.domain([0, d3.max(quandlData, function(d) { return d[4]; })]);
+	y.domain([
+				d3.min(quandlData, function(d) { return d[4]; }), 
+				d3.max(quandlData, function(d) { return d[4]; })
+			]);
 
 
 // Add the valueline path.
@@ -118,15 +160,50 @@ var div = d3.select("body").append("div")
  // Add the X Axis
   	svg.append("g")
       .attr("transform", "translate(0," + height + ")")
+      .attr("class", "axisFormat")
       .call(d3.axisBottom(x));
  
  // Add the Y Axis
  	 svg.append("g")
-     .call(d3.axisLeft(y));
+ 	  .attr("class", "axisFormat")
+      .call(d3.axisLeft(y));
 
- 
+ // add title
+
+ 	svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-family", "calibri")
+        .style("font-size", "25") 
+        .style("fill", "#4c4f53")  
+        .text("Tesla Motors Inc - last 365 days stock price");
+
+
+     // Control nLastDays with slider
+     	//http://www.d3noob.org/2014/04/using-html-inputs-with-d3js.html
+
+     // when the input range changes update the circle 
+		d3.select("#nLastDays").on("input", function() {
+		  update(+this.value);
+		});
+
+		// Initial starting radius of the circle 
+		update(365);
+
+		// update the elements
+		function update(nLastDays) {
+
+		  // adjust the text on the range slider
+		  d3.select("#nLastDays-value").text(nLastDays);
+		  d3.select("#nLastDays").property("value", nLastDays);
+
+		  // update the circle radius
+		  nLastDaysInitial = nLastDays;
+
+		}
+
  } );
 
 	</script>
 </body>
-
