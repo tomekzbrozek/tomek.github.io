@@ -12,6 +12,10 @@
     fill: none; stroke: #2f6e57; stroke-width: 2px;
   } 
 
+  .bars {
+    fill: "#4c4f53"; fill-opacity: 0;  
+  }
+
   div.tooltip { 
       position: absolute;     
       text-align: center;     
@@ -50,7 +54,7 @@
          style="display: inline-block; width: 600px; text-align: center">
          Select N last days range = <span id="nLastDays-value">...</span>
   </label>
-  <input type="range" min="1" max="1000" id="nLastDays">
+  <input type="range" min="1" max="1000" id="nLastDays" >
 
   <!-- <div id="option">
     <input name="updateButton" 
@@ -70,113 +74,118 @@
     width = 1200 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-// parse & format date / time
-  var parseTime = d3.timeParse("%Y-%m-%d");
-  var formatTime = d3.timeFormat("%B %d, %Y");
+  // append the svg obgect to the body of the page // appends a 'group' element to 'svg'
+      // moves the 'group' element to the top left margin 
+      var svg = d3.select("body").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+// SOME GOOD TIPS ON HOW TO IMPLEMENT ENTER, UPDATE, EXIT
+// http://jsfiddle.net/UBf9y/
 
-// set the ranges. Here's an amazing trick, helping to scale & revert vertical axis at once. Instead of calculating the difference between height and d.Data, height just needs to be declared as the down constraint of the y range.
-  var x = d3.scaleTime().range([0, width]); 
-  var y = d3.scaleLinear().range([height, 0]);
+var drawChart = function (data) {
 
-    // Define the axes
-var xAxis = d3.axisBottom()
-    .scale(x);
+    // parse & format date / time
+      var parseTime = d3.timeParse("%Y-%m-%d");
+      var formatTime = d3.timeFormat("%B %d, %Y");
 
-var yAxis = d3.axisLeft()
-    .scale(y);
+    // set the ranges. Here's an amazing trick, helping to scale & revert vertical axis at once. Instead of calculating the difference between height and d.Data, height just needs to be declared as the down constraint of the y range.
+      var x = d3.scaleTime().range([0, width]); 
+      var y = d3.scaleLinear().range([height, 0]);
 
-// define the line
-  var valueline = d3.line()
-    .curve(d3.curveMonotoneX)
-    .x(function(d) { return x(d[0]); }) 
-    .y(function(d) { return y(d[4]); });
+        // Define the axes
+      var xAxis = d3.axisBottom()
+        .scale(x);
 
-// Define the div for the tooltip
-var div = d3.select("body").append("div") 
-    .attr("class", "tooltip")       
-    .style("opacity", 0);
+      var yAxis = d3.axisLeft()
+        .scale(y);
 
-// append the svg obgect to the body of the page // appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin 
-  var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      // define the line
+      var valueline = d3.line()
+        .curve(d3.curveMonotoneX)
+        .x(function(d) { return x(d[0]); }) 
+        .y(function(d) { return y(d[4]); });
 
-   var quandlData;
+      // Define the div for the tooltip
+      var div = d3.select("body").append("div") 
+        .attr("class", "tooltip")       
+        .style("opacity", 0);
 
-   // set a start date to filter with (last 365 days, then filter data)
-  var nLastDaysInitial = 365;
-
-
-d3.json("https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm", function(data) {
       var quandlData = data.dataset.data;
 
-// format the data
-  quandlData.forEach(function(d) { d[0] = parseTime(d[0]); d[4] = +d[4];
-  });
+      // format the data
+      quandlData.forEach(function(d) { d[0] = parseTime(d[0]); d[4] = +d[4];
+      });
 
+
+      // set a start date to filter with (last 365 days, then filter data)
+      var nLastDaysInitial = nLastDays.value; 
+
+      var cutoffDate = new Date();
+
+      cutoffDate = cutoffDate.setDate(cutoffDate.getDate() - nLastDaysInitial);
+
+      quandlData = quandlData.filter(function(d) {
+        return d[0] > cutoffDate;
+      })
  
-// Scale the range of the data
-  x.domain(d3.extent(quandlData, function(d) { return d[0]; })); 
-  //y.domain([0, d3.max(quandlData, function(d) { return d[4]; })]);
-  y.domain([
+      // Scale the range of the data
+      x.domain(d3.extent(quandlData, function(d) { return d[0]; })); 
+      //y.domain([0, d3.max(quandlData, function(d) { return d[4]; })]);
+      y.domain([
         d3.min(quandlData, function(d) { return d[4]; }), 
         d3.max(quandlData, function(d) { return d[4]; })
       ]);
 
+    // Add the valueline path.
+      var line = svg.append("path")
+        .data([quandlData])
+        .attr("class", "line")
+        .attr("d", valueline);
 
-// Add the valueline path.
-    svg.append("path")
-      .data([quandlData])
-      .attr("class", "line")
-      .attr("d", valueline);
+      var bars = svg.selectAll("rect") 
+        .data(quandlData)     
+        .enter()
+        .append("rect")
+        .attr("class", "bars")
+        .attr("x", function(d) { return x(d[0]); } )
+        .attr("y", 0)
+        .attr("width", width / nLastDaysInitial )
+        .attr("height", height)
+        .on("mouseover", function(d) {  
+          d3.select(this)
+            .style("fill-opacity", .5); 
+            div.transition()    
+                .duration(200)    
+                .style("opacity", .9);    
+            div .html(formatTime(d[0]) + "<br/>"  + d[4] + " $")  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {
+          d3.select(this)
+            .style("fill", "#4c4f53")
+            .style("fill-opacity", 0);      
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
 
-  // svg.selectAll("rect")  
- //         .data(quandlData)     
- //     .enter()
- //     .append("rect")
- //     .attr("x", function(d) { return x(d[0]); } )
- //     .attr("y", 0)
- //     .attr("width", width / nLastDaysInitial )
- //     .attr("height", height)
- //         .attr("fill", "#4c4f53")
- //         .attr("fill-opacity", 0)  
- //        .on("mouseover", function(d) { 
- //         d3.select(this)
- //           .style("fill-opacity", .5); 
- //            div.transition()   
- //                .duration(200)   
- //                .style("opacity", .9);   
- //            div  .html(formatTime(d[0]) + "<br/>"  + d[4] + " $")  
- //                .style("left", (d3.event.pageX) + "px")    
- //                .style("top", (d3.event.pageY - 28) + "px"); 
- //            })         
- //        .on("mouseout", function(d) {
- //         d3.select(this)
- //           .style("fill", "#4c4f53")
- //           .style("fill-opacity", 0);      
- //            div.transition()   
- //                .duration(500)   
- //                .style("opacity", 0);  
- //        });
-
- // Add the X Axis
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .attr("class", "axisFormat")
-      .call(d3.axisBottom(x));
+      // Add the X Axis
+      var xAxis = svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .attr("class", "axisFormat")
+        .call(d3.axisBottom(x));
  
- // Add the Y Axis
-   svg.append("g")
-    .attr("class", "axisFormat")
-      .call(d3.axisLeft(y));
+     // Add the Y Axis
+      var yAxis = svg.append("g")
+        .attr("class", "axisFormat")
+        .call(d3.axisLeft(y));
 
- // add title
-
-  svg.append("text")
+     // add title
+      var text = svg.append("text")
         .attr("x", (width / 2))             
         .attr("y", 0 - (margin.top / 2))
         .attr("text-anchor", "middle")  
@@ -184,84 +193,35 @@ d3.json("https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=Gd
         .style("font-size", "25") 
         .style("fill", "#4c4f53")  
         .text("Tesla Motors Inc - last 365 days stock price");
- 
-} );
 
-     // Control nLastDays with slider
-     
-     //http://chimera.labs.oreilly.com/books/1230000000345/index.html
+        //line.exit().remove();
+        //bars.exit().remove();
+        //xAxis.exit().remove();
+        //yAxis.exit().remove();
 
-      //http://www.d3noob.org/2014/04/using-html-inputs-with-d3js.html
+};
 
-      //http://plnkr.co/edit/3a9emCPAEcVlR1o7YMg3?p=preview
+        // Initial starting radius of the circle 
+        window.onload = update(30);
 
-// some new links from Nov 9 / Nov 10 night:
-   // https://bl.ocks.org/mbostock/3808218
-   // http://stackoverflow.com/questions/22508133/d3-line-chart-with-enter-update-exit-logic
-   // https://medium.com/@c_behrens/enter-update-exit-6cafc6014c36#.l1b0nug1i
-
-// new link from Nov 12
-//http://www.d3noob.org/2013/02/update-d3js-data-dynamically-button.html
-
-
-     // when the input range changes update the circle 
-    d3.select("#nLastDays").on("input", function() {
-      update(+this.value);
-    });
-
-    // Initial starting radius of the circle 
-    update(365);
-
-    // update the elements
-    function update(nLastDays) {
-    // function updateData() {
-
-      // adjust the text on the range slider
-      d3.select("#nLastDays-value").text(nLastDays);
-      d3.select("#nLastDays").property("value", nLastDays);
-
-     
-    // Get the data again
-    d3.json("https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm", function(data) {
-      var quandlData = data.dataset.data;
-
-    
-      // format the data
-      quandlData.forEach(function(d) { d[0] = parseTime(d[0]); d[4] = +d[4];
-      });
-
-      
-      var cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - nLastDays);
-      var quandlDataUpdated = quandlData.filter(function(d) {
-        return d[0] > cutoffDate;
-      })
-
-        // Scale the range of the data again 
-       
-      x.domain(d3.extent(quandlDataUpdated, function(d) { return d[0]; })); 
-      //y.domain([0, d3.max(quandlData, function(d) { return d[4]; })]);
-      y.domain([
-        d3.min(quandlDataUpdated, function(d) { return d[4]; }), 
-        d3.max(quandlDataUpdated, function(d) { return d[4]; })
-      ]);
-
-    // Select the section we want to apply our changes to
-    var svg = d3.select("body").transition();
-
-    // Make the changes
-        svg.select(".line")   // change the line
-            //.duration(10)
-            .attr("d", valueline(quandlDataUpdated));
-        svg.select(".x.axis") // change the x axis
-            //.duration(10)
-            .call(xAxis)
-        svg.select(".y.axis") // change the y axis
-            //.duration(10)
-            .call(yAxis);
-
+        // when the input range changes update the circle 
+        d3.select("#nLastDays").on("input", function() {
+          update(+this.value);
         });
-    }
+
+        function update(nLastDays) {
+
+        d3.json("https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm", function(data) {
+            
+            // adjust the text on the range slider
+          d3.select("#nLastDays-value").text(nLastDays);
+          d3.select("#nLastDays").property("value", nLastDays);
+
+          drawChart(data);
+        });
+
+
+      }
 
   </script>
 </body>
