@@ -60,17 +60,16 @@
 
 <p>
   <label for="nLastDays" 
-         style="display: inline-block; width: 600px; text-align: center">
-         Select N last days range = <span id="nLastDays-value">...</span>
+         style="display: inline-block; width: 250px; text-align: center; font-family: calibri; color = red; ">
+         Select N last days range =
   </label>
-  <input type="range" min="1" max="1000" id="nLastDays" >
+  <input type="number" min="1" max="1000" id="nLastDays" >
 
-  <!-- <div id="option">
-    <input name="updateButton" 
-                type="button" 
-                value="Update" 
-                onclick="updateData()" />
-  </div> -->
+  <input name="updateButton" 
+         type="button" 
+         value="Update" 
+         onclick="update(nLastDays.value)" />
+  </div>
 
 </p>
 
@@ -247,9 +246,9 @@ var drawChart = function (data) {
         window.onload = update(30);
 
         // when the input range changes update the circle 
-        d3.select("#nLastDays").on("input", function() {
-          update(+this.value);
-        });
+        //d3.select("#nLastDays").on("click", function() {
+        //  update(+this.value);
+        //});
 
         function update(nLastDays) {
 
