@@ -6,7 +6,7 @@
     fill: none; stroke: #2f6e57; stroke-width: 2px;
   } 
 
-  .bars {
+  .circles {
     fill: "#4c4f53"; fill-opacity: 0;  
   }
 
@@ -155,17 +155,16 @@ var drawChart = function (data) {
 
         line.exit().remove();
 
-      var bars = svg.selectAll("rect") 
+      var circles = svg.selectAll("circle") 
         .data(quandlData)
 
-        bars
+        circles
         .enter()
-        .append("rect")
-        .attr("class", "bars")
-        .attr("x", function(d) { return x(d[0]); } )
-        .attr("y", 0)
-        .attr("width", width / nLastDaysInitial )
-        .attr("height", height)
+        .append("circle")
+        .attr("class", "circles")
+        .attr("cx", function(d) { return x(d[0]); } )
+        .attr("cy", function(d) { return y(d[4]); } )
+        .attr("r", 10)
         .on("mouseover", function(d) {  
           d3.select(this)
             .style("fill-opacity", .5); 
@@ -185,12 +184,11 @@ var drawChart = function (data) {
                 .style("opacity", 0); 
         });
 
-        bars
-        .attr("class", "bars")
-        .attr("x", function(d) { return x(d[0]); } )
-        .attr("y", 0)
-        .attr("width", width / nLastDaysInitial )
-        .attr("height", height)
+        circles
+        .attr("class", "circles")
+        .attr("cx", function(d) { return x(d[0]); } )
+        .attr("cy", function(d) { return y(d[4]); } )
+        .attr("r", 10)
         .on("mouseover", function(d) {  
           d3.select(this)
             .style("fill-opacity", .5); 
@@ -210,7 +208,7 @@ var drawChart = function (data) {
                 .style("opacity", 0); 
         });
 
-        bars.exit().remove();
+        circles.exit().remove();
 
 
       // Define and add the X Axis
