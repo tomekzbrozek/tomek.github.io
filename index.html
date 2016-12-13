@@ -60,7 +60,7 @@
 
 <p>
   <label for="nLastDays" 
-         style="display: inline-block; width: 250px; text-align: center; font-family: calibri; color = red; ">
+         style="display: inline-block; width: 250px; text-align: center; font-family: calibri; ">
          Select N last days range =
   </label>
   <input type="number" min="1" max="1000" id="nLastDays" >
@@ -68,8 +68,24 @@
   <input name="updateButton" 
          type="button" 
          value="Update" 
-         onclick="update(nLastDays.value)" />
-  </div>
+         onclick="update(nLastDays.value)" >
+
+
+  <label for="companyName" 
+         style="display: inline-block; width: 250px; text-align: center; font-family: calibri; ">
+         Select company name =
+  </label>
+  <input list = "companies" >
+    <datalist id = "companies" >
+      <option value = "Tesla Motors" >
+      <option value = "Tableau Software" >
+    </datalist>
+
+
+  <input name="updateButton" 
+         type="button" 
+         value="Update" 
+         onclick="update(companyName.value)" >
 
 </p>
 
@@ -248,9 +264,11 @@ var drawChart = function (data) {
         //  update(+this.value);
         //});
 
-        function update(nLastDays) {
+        function update(nLastDays, companyName) {
 
-        d3.json("https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm", function(data) {
+        var quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm"
+
+        d3.json(quandlUrl, function(data) {
             
             // adjust the text on the range slider
           d3.select("#nLastDays-value").text(nLastDays);
