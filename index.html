@@ -265,14 +265,10 @@ var drawChart = function (data) {
         .style("font-family", "calibri")
         .style("font-size", "25") 
         .style("fill", "#4c4f53")  
-        .text( function (d)
-                  { if (tesla.checked) { return "Tesla Motors" } 
-                  else { return "Tableau Software" } } + 
-            " - stock close price daily"
+        .text( chartLabel + " - stock close price daily"      
                ) ;
 
 };
-
         // Initial starting radius of the circle 
         window.onload = update(30, "Tableau Software");
 
@@ -282,6 +278,7 @@ var drawChart = function (data) {
         //});
 
     var quandlUrl = ""
+    var chartLabel = ""
     var companyName = ""
 
         function update(nLastDays) {
@@ -295,14 +292,18 @@ var drawChart = function (data) {
 
         //var quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NYSE_DATA.json?api_key=GdPU8brDtnPXP6AuZPqm"
 
-        if (tesla.checked) 
-        { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm" } 
-        else 
-        { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NYSE_DATA.json?api_key=GdPU8brDtnPXP6AuZPqm" }
 
-      companyName = function companyName() { if (tesla.checked) {return "Tesla Motors"} else {return "Tableau Software"} } ;
+        if (tesla.checked) 
+          { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm" } 
+        else 
+          { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NYSE_DATA.json?api_key=GdPU8brDtnPXP6AuZPqm" }
 
         d3.json(quandlUrl, function(data) {
+
+          if (tesla.checked) 
+            { chartLabel = "Tesla Motors" } 
+          else 
+            { chartLabel = "Tableau Software" }
 
           drawChart(data);
         });
