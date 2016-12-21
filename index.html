@@ -239,7 +239,6 @@ var drawChart = function (data) {
 
         circles.exit().remove();
 
-
       // Define and add the X Axis
       xAxis = svg.append("g")
                   .attr("class", "xAxisFormat")
@@ -257,41 +256,34 @@ var drawChart = function (data) {
           .attr("class", "yAxisFormat")
           .call(d3.axisLeft(y));
 
-     // add title
-      var text = svg.append("text")
+      d3.select("#title").remove();
+
+          // add title
+      var text = svg
+        .append("text")
+        .attr("id", "title")
         .attr("x", (width / 2))             
         .attr("y", 0 - (margin.top / 2))
         .attr("text-anchor", "middle")  
         .style("font-family", "calibri")
         .style("font-size", "25") 
-        .style("fill", "#4c4f53")  
-        .text( chartLabel + " - stock close price daily"      
-               ) ;
+        .style("fill", "#4c4f53")
+        
+        text
+        .text( chartLabel + " - stock close price daily" ) ; 
 
 };
         // Initial starting radius of the circle 
         window.onload = update(30, "Tableau Software");
 
-        // when the input range changes update the circle 
-        //d3.select("#nLastDays").on("click", function() {
-        //  update(+this.value);
-        //});
-
     var quandlUrl = ""
     var chartLabel = ""
-    var companyName = ""
 
         function update(nLastDays) {
 
         // adjust the text on the range slider
         d3.select("#nLastDays-value").text(nLastDays);
         d3.select("#nLastDays").property("value", nLastDays);
-
-      //d3.select("#companies-value").text(companies);
-        //d3.select("#companies").property("value", companies);
-
-        //var quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NYSE_DATA.json?api_key=GdPU8brDtnPXP6AuZPqm"
-
 
         if (tesla.checked) 
           { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm" } 
