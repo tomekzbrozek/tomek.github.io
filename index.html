@@ -219,9 +219,10 @@ var drawChart = function (data) {
         .attr("class", "circles")
         .attr("cx", function(d) { return x(d[0]); } )
         .attr("cy", function(d) { return y(d[4]); } )
-        .attr("r", 10)
+        .attr("r", 4)
         .on("mouseover", function(d) {  
           d3.select(this)
+            .attr("r", 10)
             .style("fill-opacity", .5); 
             div.transition()    
                 .duration(10)    
@@ -233,6 +234,7 @@ var drawChart = function (data) {
         .on("mouseout", function(d) {
           d3.select(this)
             .style("fill", "#4c4f53")
+            .attr("r", 4)
             .style("fill-opacity", 0.3);      
             div.transition()    
                 .duration(10)    
