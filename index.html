@@ -54,46 +54,65 @@
       fill: #4c4f53;
   }  
 
+  input[type = "button"] {
+    position: absolute;
+    right: 100px;
+    top: 20px;
+    height: 40px;
+    width: 150px;
+    color: #303030 ;
+    font: 14px calibri;
+    font-weight: bold;
+    background: #F0E68C  ;
+    display: inline-block;
+  }
+
+  #toolbar {
+    background-color: #4c4f53;
+    height: 50px;
+  }
+
+  .radio {
+    display: inline-block;
+    position: relative;
+    display: inline-block; 
+    width: 130px; 
+    text-align: center; 
+    font: 14px calibri;
+    color: white;
+  }
+
   </style>
 
 <body>
 
-<p>
+<p id = "toolbar">
   <label for="nLastDays" 
-         style="display: inline-block; width: 200px; text-align: center; font-family: calibri; ">
-         Select N last days range =
+         style="display: inline-block; color: white; width: 50px; text-align: center; font: 14px calibri; ">
+         Days
   </label>
   <input type="number" min="1" max="1000" id="nLastDays" >
-
-  <input name="updateButton1" 
-         type="button" 
-         value="Update" 
-         onclick="update(nLastDays.value)" >
-
   
-    <label for="tesla" 
-         style="display: inline-block; width: 120px; text-align: center; font-family: calibri; ">
+    <label for="tesla" class = "radio" >
          Tesla Motors
   </label>
     <input type = "radio" name = "companies" id = "tesla" value = "Tesla Motors" checked >
 
-    <label for="tableau" 
-         style="display: inline-block; width: 130px; text-align: center; font-family: calibri; ">
+    <label for="tableau" class = "radio" >
          Tableau Software
   </label>
     <input type = "radio" name = "companies" id = "tableau" value = "Tableau Software" >
 
-    <label for="firstsolar" 
-         style="display: inline-block; width: 130px; text-align: center; font-family: calibri; ">
+    <label for="firstsolar" class = "radio" >
          First Solar
   </label>
     <input type = "radio" name = "companies" id = "firstsolar" value = "First Solar" >
 
 
-  <input name="updateButton2" 
-         type="button" 
-         value="Update" 
-         onclick="update(nLastDays.value)" >
+ <input name="updateButton" 
+           type="button" 
+           value="Update" 
+           onclick="update(nLastDays.value)" >
 
 </p>
 
@@ -102,7 +121,7 @@
   <script>
 
 // set the dimensions and margins of the graph
-  var margin = {top: 100, right: 50, bottom: 50, left: 50}, 
+  var margin = {top: 50, right: 50, bottom: 50, left: 50}, 
     width = 1200 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -194,7 +213,7 @@ var drawChart = function (data) {
             .attr("r", 10)
             .style("fill-opacity", .5); 
             div.transition()    
-                .duration(10)    
+                .duration(1)    
                 .style("opacity", .9);    
             div .html(formatTime(d[0]) + "<br/>"  + d[4] + " $")  
                 .style("left", (d3.event.pageX) + "px")   
@@ -206,7 +225,7 @@ var drawChart = function (data) {
             .attr("r", 4)
             .style("fill-opacity", 0.3);      
             div.transition()    
-                .duration(10)    
+                .duration(1)    
                 .style("opacity", 0); 
         });
 
@@ -220,7 +239,7 @@ var drawChart = function (data) {
             .attr("r", 10)
             .style("fill-opacity", .5); 
             div.transition()    
-                .duration(10)    
+                .duration(1)    
                 .style("opacity", .9);    
             div .html(formatTime(d[0]) + "<br/>"  + d[4] + " $")  
                 .style("left", (d3.event.pageX) + "px")   
@@ -232,7 +251,7 @@ var drawChart = function (data) {
             .attr("r", 4)
             .style("fill-opacity", 0.3);      
             div.transition()    
-                .duration(10)    
+                .duration(1)    
                 .style("opacity", 0); 
         });
 
