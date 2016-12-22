@@ -60,7 +60,7 @@
 
 <p>
   <label for="nLastDays" 
-         style="display: inline-block; width: 250px; text-align: center; font-family: calibri; ">
+         style="display: inline-block; width: 200px; text-align: center; font-family: calibri; ">
          Select N last days range =
   </label>
   <input type="number" min="1" max="1000" id="nLastDays" >
@@ -68,37 +68,32 @@
   <input name="updateButton1" 
          type="button" 
          value="Update" 
-         onclick="update(nLastDays.value, tesla.checked, tableau.checked)" >
+         onclick="update(nLastDays.value)" >
 
-
-  <!--<label for="companies" 
-         style="display: inline-block; width: 150px; text-align: center; font-family: calibri; ">
-         Select company name =
-  </label>-->
   
     <label for="tesla" 
-         style="display: inline-block; width: 100px; text-align: center; font-family: calibri; ">
+         style="display: inline-block; width: 120px; text-align: center; font-family: calibri; ">
          Tesla Motors
   </label>
     <input type = "radio" name = "companies" id = "tesla" value = "Tesla Motors" checked >
 
     <label for="tableau" 
-         style="display: inline-block; width: 150px; text-align: center; font-family: calibri; ">
+         style="display: inline-block; width: 130px; text-align: center; font-family: calibri; ">
          Tableau Software
   </label>
     <input type = "radio" name = "companies" id = "tableau" value = "Tableau Software" >
 
-  <!--<input list = "companies" value = "Tableau Software">
-    <datalist id = "companies" >
-      <option value = "Tesla Motors" >
-      <option value = "Tableau Software" >
-    </datalist> -->
+    <label for="firstsolar" 
+         style="display: inline-block; width: 130px; text-align: center; font-family: calibri; ">
+         First Solar
+  </label>
+    <input type = "radio" name = "companies" id = "firstsolar" value = "First Solar" >
 
 
   <input name="updateButton2" 
          type="button" 
          value="Update" 
-         onclick="update(nLastDays.value, tesla.checked, tableau.checked)" >
+         onclick="update(nLastDays.value)" >
 
 </p>
 
@@ -291,15 +286,19 @@ var drawChart = function (data) {
 
         if (tesla.checked) 
           { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_TSLA.json?api_key=GdPU8brDtnPXP6AuZPqm" } 
-        else 
-          { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NYSE_DATA.json?api_key=GdPU8brDtnPXP6AuZPqm" }
+        else if (tableau.checked)
+            { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NYSE_DATA.json?api_key=GdPU8brDtnPXP6AuZPqm" }
+        else
+            { quandlUrl = "https://www.quandl.com/api/v3/datasets/GOOG/NASDAQ_FSLR.json?api_key=GdPU8brDtnPXP6AuZPqm" }
 
         d3.json(quandlUrl, function(data) {
 
           if (tesla.checked) 
             { chartLabel = "Tesla Motors" } 
-          else 
+          else if (tableau.checked)
             { chartLabel = "Tableau Software" }
+          else
+            { chartLabel = "First Solar"}
 
           drawChart(data);
         });
