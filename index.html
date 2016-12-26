@@ -55,21 +55,26 @@
   }  
 
   input[type = "button"] {
+    display: inline-block;
     position: absolute;
-    right: 100px;
-    top: 20px;
-    height: 40px;
+    right: 500px;
+    top: 0px;
+    height: 30px;
     width: 150px;
     color: #303030 ;
     font: 14px calibri;
     font-weight: bold;
-    background: #F0E68C  ;
-    display: inline-block;
+    background: white ;
   }
 
   #toolbar {
-    background-color: #4c4f53;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
     height: 50px;
+    position: relative;
+    
   }
 
   .radio {
@@ -79,7 +84,7 @@
     width: 130px; 
     text-align: center; 
     font: 14px calibri;
-    color: white;
+    color: #4c4f53;
   }
 
   </style>
@@ -88,7 +93,7 @@
 
 <p id = "toolbar">
   <label for="nLastDays" 
-         style="display: inline-block; color: white; width: 50px; text-align: center; font: 14px calibri; ">
+         style="display: inline-block; color: #4c4f53; width: 50px; text-align: center; font: 14px calibri; ">
          Days
   </label>
   <input type="number" min="1" max="1000" id="nLastDays" >
